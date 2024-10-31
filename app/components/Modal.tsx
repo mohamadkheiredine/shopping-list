@@ -29,12 +29,12 @@ const ConfirmationModal = ({
     }, [handleClose]);
 
     // Disable scroll on modal open
-    // useEffect(() => {
-    //     document.body.style.overflow = 'hidden';
-    //     return (): void => {
-    //         document.body.style.overflow = 'unset';
-    //     };
-    // }, [isOpen]);
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return (): void => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
