@@ -38,21 +38,25 @@ export default function SharePage() {
     name: "products",
   });
 
-  const handleRemove = (index: number) => {
-    remove(index);
-  };
+  const handleRemove =
+    (index: number) => {
+      remove(index);
+    }; //maybe i will remove useCalback later
 
   const handleAdd = () => {
     append({ product: "" });
   };
 
   const formRef = useRef<HTMLFormElement>(null);
+  console.log("render the form");
 
   return (
     <>
       <Form {...form}>
         {state?.message !== "" && !state.issues && (
-          <div className="text-red-500 flex justify-center items-center">{state.message}</div>
+          <div className="text-red-500 flex justify-center items-center">
+            {state.message}
+          </div>
         )}
         {state?.issues && (
           <div className="text-red-500 flex justify-center items-center">
@@ -70,7 +74,12 @@ export default function SharePage() {
           action={formAction}
           ref={formRef}
           className="space-y-8 flex justify-center items-center flex-col"
-          onSubmit={form.handleSubmit(() => formRef.current?.submit())}
+          onSubmit={(evt) => {
+            evt.preventDefault();
+            form.handleSubmit(() => {
+              formAction(new FormData(formRef.current!));
+            })(evt);
+          }}
         >
           <div className="flex gap-2">
             <FormField
@@ -82,7 +91,9 @@ export default function SharePage() {
                   <FormControl>
                     <Input placeholder="" {...field} />
                   </FormControl>
-                  <FormDescription className="text-white">Your Name</FormDescription>
+                  <FormDescription className="text-white">
+                    Your Name
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -98,7 +109,9 @@ export default function SharePage() {
                   <FormControl>
                     <Input placeholder="" {...field} />
                   </FormControl>
-                  <FormDescription className="text-white">Your Email</FormDescription>
+                  <FormDescription className="text-white">
+                    Your Email
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -112,16 +125,22 @@ export default function SharePage() {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex-grow">
-                      <FormLabel className="text-white">{`product-${index + 1}`}</FormLabel>
+                      <FormLabel className="text-white">{`product-${
+                        index + 1
+                      }`}</FormLabel>
                       <FormControl>
                         <Input placeholder="" {...field} />
                       </FormControl>
-                      <FormMessage className="text-red-500"/>
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
-                <Button onClick={() => handleRemove(index)} className="ml-2" type="button">
-                  <X />
+                <Button
+                  onClick={() => handleRemove(index)}
+                  className="ml-2"
+                  type="button"
+                >
+                  <X className="text-red-500"/>
                 </Button>
               </div>
             ))}
@@ -133,7 +152,12 @@ export default function SharePage() {
               Add Product
             </Button>
           </div>
-          <Button type="submit" className="mt-3 justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Submit</Button>
+          <Button
+            type="submit"
+            className="mt-3 justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Submit
+          </Button>
         </form>
       </Form>
     </>
