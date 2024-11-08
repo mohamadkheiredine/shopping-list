@@ -14,11 +14,6 @@ const SmallConfirmationModal = ({
   handleClose,
   goToHome,
 }: ConfirmationModalProps) => {
-  // const router = useRouter();
-
-  // const goToHomePage = () => {
-  //   router.push('/'); // Navigates to the home page
-  // };
 
   // Close modal on escape key press
   useEffect(() => {
@@ -48,7 +43,7 @@ const SmallConfirmationModal = ({
       <>
       <div className="fixed top-0 left-0 w-screen h-screen z-40 bg-neutral-800 opacity-50" />
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="rounded flex flex-col items-center box-border w-1/2 max-w-md p-5 bg-gray-100 max-h-[15vh]">
+          <div className="rounded flex flex-col items-center box-border w-1/2 max-w-md p-5 bg-gray-100 max-h-[20vh]">
             <p className="text-black text-center">Are you sure that you want to close this form?</p>
             <div className="flex justify-center space-x-4 mt-4">
               <button 
