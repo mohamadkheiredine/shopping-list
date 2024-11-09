@@ -41,7 +41,6 @@ function transformData(input: InputType): FormDataType {
     }
   }
 
-  // Filter out undefined products
   result.products = result.products.filter((product) => product);
 
   return result;
@@ -59,9 +58,6 @@ async function addDataToFireStore({ name, email, products }: dataProp): Promise<
     return false;
   }
 }
-
-// const db = getFirestore(app); // Initialize Firestore
-
 export async function onSubmitAction(
   prevState: FormState,
   formData: FormData
@@ -91,34 +87,11 @@ export async function onSubmitAction(
       issues: parsed.error.issues.map((issue) => issue.message),
     };
   }
-
-  // const invalidProducts: Record<string, string> = {};
-  // parsed.data.products.forEach((prod, index) => {
-  //   if (prod.product.includes("|")) {
-  //     invalidProducts[`products.${index}.product`] = "Product cannot contain '|' character";
-  //   }
-  // });
-
-  // if (Object.keys(invalidProducts).length > 0) {
-  //   return {
-  //     message: "Invalid product",
-  //     fields,
-  //     issues: parsed.error.issues.push("Product cannot contain '|' character").map((issue) => issue.message)
-  //   };
-  // }
-
   const arrayOfProducts = data.products.map(prod => prod.product).join("|");
   const dataToDatabase = { name: data.name, email: data.email, products: arrayOfProducts };
 
-  const success = await addDataToFireStore(dataToDatabase);
-  // Perform Firestore document write if needed
-  // await addDoc(collection(db, "shopping-list-Id"), data); // Uncomment to add data to Firestore
+  await addDataToFireStore(dataToDatabase);
 
-  // Optionally, revalidate or redirect as necessary
-  // revalidatePath("/");
-  // redirect("/");
-  
-
-  return { message: "Card added successfully.", ifSuccessfullyAdded: success };
+  return { message: "Card added successfully."};
 }
 
