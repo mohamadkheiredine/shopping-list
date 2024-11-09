@@ -9,10 +9,15 @@ export type FormValues = {
 }
 
 export const productsSchema = z.object({
-  product: z.string().trim().min(1, {
-    message: "Product is required"
-  }),
-})
+  product: z
+    .string()
+    .trim()
+    .min(1, { message: "Product is required" })
+    .refine((val) => !val.includes("|"), {
+      message: "Product cannot contain '|' character",
+    }),
+});
+
 
 export const schema = z.object({
   name: z.string().trim().min(1, {
@@ -25,9 +30,13 @@ export const schema = z.object({
 })
 
 export type FormState = {
-  message: string;
+  message?: string;
   fields?: Record<string, string>;
   issues?: string[];
+  ifSuccessfullyAdded?: boolean
 };
+// export type SubmitResponse =
+//   { message: string; fields?: Record<string, string>; issues?: string[] }
+//   | undefined;
 
 export type Tschema = z.infer<typeof schema>
