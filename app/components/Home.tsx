@@ -1,51 +1,39 @@
 "use client";
 import Card from "./Card";
 import { Plus, X } from "lucide-react";
-// import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import ConfirmationModal from "./Modal";
-// import SharePage from "./FormContent";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { schema, Tschema } from "@/lib/models";
-import { useFormState } from "react-dom";
 import { onSubmitAction } from "@/lib/actions";
 import db from "@/firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { useFormState } from "react-dom";
 
 interface Card {
   name: string;
   email: string;
   products: string;
-  // createdDate?: string;
 }
 
 async function fetchDataAndRenderCards() {
   try {
     const querySnapshot = await getDocs(collection(db, "shopping-list-Id"));
     const data: Card[] = [];
-
+    
     querySnapshot.forEach((doc) => {
       const docData = doc.data();
       data.push({
         name: docData.name,
         email: docData.email,
-        products: (docData.products || "").split("|"), // Ensure splitting a string, even if empty
+        products: (docData.products || "").split("|"),
       });
     });
 
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Error fetching data: ", error);
@@ -53,70 +41,12 @@ async function fetchDataAndRenderCards() {
   }
 }
 
-
-// function delay ( ms: number ) { return new Promise ( resolve => setTimeout ( resolve , ms ) ) ; }
-
 export default function HomePage() {
-  const [ConfirmationModalOpen, setConfirmationModalOpen] =
-    useState<boolean>(false);
-
-  const [added, setAdded] = useState(false);
-
-  const [cards, setCards] = useState<Card[]>([{
-    name: "card-1",
-    // createdDate: "15/10/2024",
-    products: "product-1",
-    email: "test@example.com",
-  },
-  {
-    name: "card-2",
-    // createdDate: "15/10/2024",
-    products: "product-2",
-    email: "test2@example.com",
-  },
-  {
-    name: "card-3",
-    // createdDate: "15/10/2024",
-    products: "product-3",
-    email: "test3@example.com",
-  },
-  {
-    name: "card-4",
-    // createdDate: "15/10/2024",
-    products: "product-4",
-    email: "test4@example.com",
-  },])
-
-  // const cards: Card[] = [
-  //   {
-  //     name: "card-1",
-  //     // createdDate: "15/10/2024",
-  //     products: "product-1",
-  //     email: "test@example.com",
-  //   },
-  //   {
-  //     name: "card-2",
-  //     // createdDate: "15/10/2024",
-  //     products: "product-2",
-  //     email: "test2@example.com",
-  //   },
-  //   {
-  //     name: "card-3",
-  //     // createdDate: "15/10/2024",
-  //     products: "product-3",
-  //     email: "test3@example.com",
-  //   },
-  //   {
-  //     name: "card-4",
-  //     // createdDate: "15/10/2024",
-  //     products: "product-4",
-  //     email: "test4@example.com",
-  //   },
-  // ];
-
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
+  const [cards, setCards] = useState<Card[]>([]);
+  
   const handleClick = () => {
     setConfirmationModalOpen(true);
-    setAdded(false);
   };
 
   const handleCloseModal = () => {
@@ -151,81 +81,32 @@ export default function HomePage() {
   };
 
   const formRef = useRef<HTMLFormElement>(null);
-  console.log("render the form");
-
-  // const [cardContent, setCardContent] = useState<Card[]>([]);
-
-  // const [fetched, setFetched] = useState(true);
-  // const [helper, setHelper] = useState(true);
-  // const [added, setAdded] = useState(state.ifSuccessfullyAdded);
-  // const [helper, setHelper] = useState(false);
-  // const [helperr, sethelperr] = useState(true);
-
-  // const toggleHelper = () => setHelper((prevState) => !prevState);
-
-  // const [i, setI] = useState(0);
 
   useEffect(() => {
-    // new Promise(resolve => 5000)
-    // delay(3000);
-    if (state.ifSuccessfullyAdded && added) {
-      // cards.push([]);
-      console.log("if successfully added is:", state.ifSuccessfullyAdded);
-      const fetchData = async () => {
+    const fetchData = async () => {
+      try {
         const data = await fetchDataAndRenderCards();
-        setCards((prevCards) => [...prevCards, data[0]]);
-        // cards.push(data[data.length - 1]);
-        // setCards((prev) => [...prev, data[0]]);
-        console.log("the name is: ", data[0].name);
-        // data.pop();
-        // console.log("the i is:", i);
-        // setI(i+1);
-        // setCardContent(data);
-        // setAdded(false);
-        // setAdded(false)
-        
-        console.log("data fetched is: ", data);
-        // console.log("card content is:",cardContent)
-      };
+        setCards(data);
+      } catch (error) {
+        console.error("Error fetching data inside useEffect:", error);
+      }
+    };
 
-      fetchData();
-      // setAdded(false);
-      // setHelper(true);
-    }
-  }, [state.ifSuccessfullyAdded, added]);
+    fetchData();
+  }, []);
 
-  // useEffect(() => {
-  //   setI(i+1);
-  // }, [state.ifSuccessfullyAdded, i])
+  const onSubmit = async (data: Tschema) => {
+    formAction(new FormData(formRef.current!));
+    const newCard: Card = {
+      name: data.name,
+      email: data.email,
+      products: data.products.map((item) => item.product).join(" "),
+    };
 
-  // useEffect(() => {
-  //   sethelperr(false);
-  // }, [helper])
-
-  // const addCardToList = (): void => {
-  //   cardContent.forEach((content) => {
-  //     // Check if the card already exists in the cards array by comparing the properties
-  //     const isDuplicate = cards.some(
-  //       (card) =>
-  //         card.name === content.name &&
-  //         card.email === content.email &&
-  //         card.products === content.products
-  //     );
-
-  //     if (!isDuplicate) {
-  //       setCards((prev) => [...prev, content]);
-  //     }
-  //   });
-  // };
-
-  // addCardToList();
-
-  // const fetchDataAndRenderCards = () => {
-  //   if (state.ifSuccessfullyAdded) {
-
-  //   }
-
-  // }
+    setCards((prevCards) => [...prevCards, newCard]);
+    form.reset();
+    setConfirmationModalOpen(false);
+  };
 
   return (
     <div className="flex flex-wrap justify-center gap-4 mt-24">
@@ -233,17 +114,12 @@ export default function HomePage() {
         <Button onClick={handleClick}>
           <Plus className="w-24 h-24" />
         </Button>
-        {ConfirmationModalOpen && (
+        {confirmationModalOpen && (
           <ConfirmationModal
-            isOpen={ConfirmationModalOpen}
+            isOpen={confirmationModalOpen}
             handleClose={handleCloseModal}
           >
             <Form {...form}>
-              {/* {state?.message !== "" && !state.issues && (
-          <div className="text-red-500 flex justify-center items-center">
-            {state.message}
-          </div>
-        )} */}
               {state?.issues && (
                 <div className="text-red-500 flex justify-center items-center">
                   <ul>
@@ -263,12 +139,7 @@ export default function HomePage() {
                 onSubmit={(evt) => {
                   evt.preventDefault();
                   evt.stopPropagation();
-                  form.handleSubmit(() => {
-                    formAction(new FormData(formRef.current!));
-                    setAdded(true);
-                    setConfirmationModalOpen(false);
-                    form.reset();
-                  })(evt);
+                  form.handleSubmit(onSubmit)(evt);
                 }}
               >
                 <div className="flex gap-2">
@@ -345,11 +216,9 @@ export default function HomePage() {
                 <Button
                   type="submit"
                   className="mt-3 justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  // onClick={() => setAdded(true)}
                 >
                   Add Card
                 </Button>
-                {/* {state.ifSuccessfullyAdded && handleCloseModal} */}
               </form>
             </Form>
           </ConfirmationModal>
